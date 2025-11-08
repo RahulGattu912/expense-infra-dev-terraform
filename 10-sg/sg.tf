@@ -39,3 +39,34 @@ module "bastion_sg" {
     vpc_id          = data.aws_ssm_parameter.vpc_id.value
     common_tags     = var.common_tags
 }
+
+module "app_alb_sg" {
+    source          = "git::https://github.com/RahulGattu912/terraform-modules.git//terraform-aws-security-group?ref=main"
+    environment     = var.environment
+    project_name    = var.project_name
+    sg_name         = "app-alb"
+    sg_description  = "Created for backend ALB instances int expense dev"
+    vpc_id          = data.aws_ssm_parameter.vpc_id.value
+    common_tags     = var.common_tags
+}
+
+# app alb accepting traffic from bastion
+resource "aws_security_group_rule" "app_alb_bastion" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = [module.bastion_sg.sg_id]
+  security_group_id =  module.app_alb_sg.sg_id
+}
+
+# if you don't write this. you can't connect to bastion ec2 instance
+resource "aws_security_group_rule" "bastion_public" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = [ "0.0.0.0/0" ] # we need to make bastion host accessible from public internet or we can give a static ip, so that we can access bastion host from that ip only
+  security_group_id =  module.backend_sg_id.sg_id
+}
+
