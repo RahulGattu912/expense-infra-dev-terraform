@@ -15,6 +15,9 @@ resource "aws_instance" "vpn" {
     # terraform accepts this format [" subnet-cbyisbdo9bs9","subnet-buweb8bq0wh9"] but not subnet-cbyisbdo9bs9,subnet-buweb8bq0wh9 
     # so we need to split it using "," and get the first item in the list. It is stored in locals.tf
     subnet_id               = local.public_subnet_id 
+    # as soon as the instance is created, this (user-data) is loaded in the instance by terraform 
+    # and in every instance there are scripts that are run after the creation of instance
+    user_data               = file("user-data.sh")  
     
     tags = merge(
         var.common_tags,
@@ -22,4 +25,8 @@ resource "aws_instance" "vpn" {
             Name = "${var.project_name}-${var.environment}-vpn"
         }
     )
+}
+
+output "vpn_id" {
+    value = aws_instance.openvpn.public_ip
 }

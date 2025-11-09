@@ -134,3 +134,22 @@ resource "aws_security_group_rule" "app_alb_vpn" {
   source_security_group_id = module.vpn_sg.sg_id # app alb should accept traffic from vpn
   security_group_id =  module.vpn_sg.sg_id
 }
+
+resource "aws_security_group_rule" "mysql_bastion" {
+  type              = "ingress"
+  from_port         = 3306
+  to_port           = 3306
+  protocol          = "tcp"
+  source_security_group_id = module.bastion_sg.sg_id
+  security_group_id =  module.mysql_sg.sg_id
+}
+
+# mysql accepting traffic from vpn
+resource "aws_security_group_rule" "mysql_vpn" {
+  type              = "ingress"
+  from_port         = 3306
+  to_port           = 3306
+  protocol          = "tcp"
+  source_security_group_id = module.vpn_sg.sg_id
+  security_group_id =  module.mysql_sg.sg_id
+}

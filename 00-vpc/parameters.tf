@@ -21,3 +21,9 @@ resource "aws_ssm_parameter" "database_subnet_ids" {
   type  = "StringList" # aws accepts this format: subnet-cbyisbdo9bs9,subnet-buweb8bq0wh9 but not [" subnet-cbyisbdo9bs9","subnet-buweb8bq0wh9"]
   value = join(",",module.vpc.database_subnet_ids)
 }
+
+resource "aws_ssm_parameter" "database_subnet_group_name" {
+  name  = "/${var.project_name}/${var.environment}/database_subnet_group_name"
+  type  = "String" 
+  value = aws_db_subnet_group.expense.name
+}
