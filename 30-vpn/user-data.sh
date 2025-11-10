@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 admin_user=openvpn
 admin_pw=Openvpn@123
 reroute_gw=1

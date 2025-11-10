@@ -1,7 +1,7 @@
 # create 3 security groups: frontend, backend, mysql
 
 module "mysql_sg" {
-    source          = var.sg_source
+    source          = "git::https://github.com/RahulGattu912/terraform-modules.git//terraform-aws-security-group?ref=main"
     environment     = var.environment
     project_name    = var.project_name
     sg_name         = "mysql"
@@ -11,7 +11,7 @@ module "mysql_sg" {
 }
 
 module "backend_sg" {
-    source          = var.sg_source
+    source          = "git::https://github.com/RahulGattu912/terraform-modules.git//terraform-aws-security-group?ref=main"
     environment     = var.environment
     project_name    = var.project_name
     sg_name         = "backend"
@@ -21,7 +21,7 @@ module "backend_sg" {
 }
 
 module "frontend_sg" {
-    source          = var.sg_source
+    source          = "git::https://github.com/RahulGattu912/terraform-modules.git//terraform-aws-security-group?ref=main"
     environment     = var.environment
     project_name    = var.project_name
     sg_name         = "frontend"
@@ -31,7 +31,7 @@ module "frontend_sg" {
 }
 
 module "bastion_sg" {
-    source          = var.sg_source
+    source          = "git::https://github.com/RahulGattu912/terraform-modules.git//terraform-aws-security-group?ref=main"
     environment     = var.environment
     project_name    = var.project_name
     sg_name         = "bastion"
@@ -41,7 +41,7 @@ module "bastion_sg" {
 }
 
 module "app_alb_sg" {
-    source          = var.sg_source
+    source          = "git::https://github.com/RahulGattu912/terraform-modules.git//terraform-aws-security-group?ref=main"
     environment     = var.environment
     project_name    = var.project_name
     sg_name         = "app-alb"
@@ -55,7 +55,7 @@ module "app_alb_sg" {
 # 443 - to login to browser
 # 1194, 943 - internal ports/administrative ports
 module "vpn_sg" {
-    source          = var.sg_source
+    source          = "git::https://github.com/RahulGattu912/terraform-modules.git//terraform-aws-security-group?ref=main"
     environment     = var.environment
     project_name    = var.project_name
     sg_name         = "vpn"
@@ -70,7 +70,7 @@ resource "aws_security_group_rule" "app_alb_bastion" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  source_security_group_id = [module.bastion_sg.sg_id]
+  source_security_group_id =  module.bastion_sg.sg_id 
   security_group_id =  module.app_alb_sg.sg_id
 }
 
@@ -81,7 +81,7 @@ resource "aws_security_group_rule" "bastion_public" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = [ "0.0.0.0/0" ] # we need to make bastion host accessible from public internet or we can give a static ip, so that we can access bastion host from that ip only
-  security_group_id =  module.backend_sg_id.sg_id
+  security_group_id =  module.backend_sg.sg_id
 }
 
 resource "aws_security_group_rule" "vpn_ssh" {
@@ -153,3 +153,41 @@ resource "aws_security_group_rule" "mysql_vpn" {
   source_security_group_id = module.vpn_sg.sg_id
   security_group_id =  module.mysql_sg.sg_id
 }
+
+# backend accepting traffic from vpn
+resource "aws_security_group_rule" "backend_vpn" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.vpn_sg.sg_id
+  security_group_id =  module.backend_sg.sg_id
+}
+
+resource "aws_security_group_rule" "backend_vpn_http" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.vpn_sg.sg_id
+  security_group_id =  module.backend_sg.sg_id
+}
+
+resource "aws_security_group_rule" "backend_app_alb" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.app_alb_sg.sg_id
+  security_group_id =  module.backend_sg.sg_id
+}
+
+# mysql accepting traffic from backend
+resource "aws_security_group_rule" "mysql_backend" {
+  type              = "ingress"
+  from_port         = 3306
+  to_port           = 3306
+  protocol          = "tcp"
+  source_security_group_id = module.backend_sg.sg_id
+  security_group_id =  module.mysql_sg.sg_id
+} 
