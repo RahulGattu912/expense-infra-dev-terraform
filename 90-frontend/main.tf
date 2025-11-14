@@ -71,6 +71,7 @@ resource "aws_lb_target_group" "frontend" {
     port = 80 # in out project frontend runs on port 80
     protocol = "HTTP"
     vpc_id = local.vpc_id
+    deregistration_delay = 60 # time given to instance to complete existing requests before deregistering from lb
     
     health_check {
         healthy_threshold = 2
@@ -131,7 +132,7 @@ resource "aws_autoscaling_group" "frontend" {
     }
 
     timeouts {
-        delete = "5m"
+        delete = "10m" # increased from 5m to 10m
     }
 
     tag {

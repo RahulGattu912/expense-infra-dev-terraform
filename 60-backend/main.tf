@@ -70,6 +70,7 @@ resource "aws_lb_target_group" "backend" {
     port = 8080
     protocol = "HTTP"
     vpc_id = local.vpc_id
+    deregistration_delay = 60 # time given to instance to complete existing requests before deregistering from lb
     
     health_check {
         healthy_threshold = 2
@@ -130,7 +131,7 @@ resource "aws_autoscaling_group" "backend" {
     }
 
     timeouts {
-        delete = "5m"
+        delete = "10m" # increased to 10m from 5m
     }
 
     tag {
