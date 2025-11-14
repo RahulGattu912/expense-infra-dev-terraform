@@ -147,6 +147,18 @@ resource "aws_autoscaling_group" "backend" {
     }
 }
 
+resource "aws_autoscaling_policy" "backend_autoscaling_policy" {
+    name = "${local.resource_name}-backend"
+    policy_type = "TargetTrackingScaling"
+    autoscaling_group_name = aws_autoscaling_group.backend.name
+    target_tracking_configuration {
+      target_value = 70 # 70 percent cpu utilization
+      predefined_metric_specification {
+        predefined_metric_type = "ASGAverageCPUUtilization"
+      }
+    }
+}
+
 resource "aws_alb_listener_rule" "backend" {
     listener_arn = data.aws_ssm_parameter.app_alb_listener_arn.value
     priority = 10
