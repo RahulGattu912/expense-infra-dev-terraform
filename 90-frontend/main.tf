@@ -115,7 +115,7 @@ resource "aws_autoscaling_group" "frontend" {
         id = aws_launch_template.frontend.id
         version = "$Latest"
     }
-    vpc_zone_identifier = local.public_subnet_ids
+    vpc_zone_identifier = local.public_subnet_ids # set of strings
     instance_refresh { # deleting instances after creating new instances
         strategy = "Rolling"
         preferences {
