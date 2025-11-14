@@ -1,5 +1,5 @@
 resource "aws_instance" "backend" {
-    ami                     = data.aws_ami.devops.id
+    ami                     = data.aws_ami.devops.id # golden ami - ami used by every instance in company
     vpc_security_group_ids  = [ data.aws_ssm_parameter.bastion_sg_id.value ]
     instance_type           = "t2.micro"
     subnet_id               = local.private_subnet_id
@@ -104,10 +104,10 @@ resource "aws_launch_template" "backend" {
 resource "aws_autoscaling_group" "backend" {
     name = local.resource_name
     max_size = 10
-    min_size = 2
-    health_check_grace_period = 60
+    min_size = 1
+    health_check_grace_period = 180 # 3 minutes for instance to initialize
     health_check_type = "ELB"
-    desired_capacity = 2
+    desired_capacity = 1
     target_group_arns = [aws_lb_target_group.backend.arn]
 
     launch_template {
