@@ -2,6 +2,13 @@ resource "aws_cloudfront_distribution" "expense_cdn" {
   origin {
     domain_name              = "${var.project_name}-${var.environment}.${var.domain_name}"
     origin_id                = "${var.project_name}-${var.environment}.${var.domain_name}"
+    // by default this is taking s3 buclet as origin, we need to specify custom origin for our ALB
+    custom_origin_config {
+        http_port = 80
+        https_port = 443
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols = ["TLSv1.2"]
+    }
   }
 
   enabled             = true
