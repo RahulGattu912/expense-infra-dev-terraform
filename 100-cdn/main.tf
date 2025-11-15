@@ -64,3 +64,18 @@ resource "aws_cloudfront_distribution" "expense_cdn" {
     )
 
 }
+
+resource "aws_route53_record" "cdn" {
+  zone_id = var.zone_id
+  name    = "${var.project_name}-cdn.${var.domain_name}"  # {any-text-or-string}.app-dev.learndevops.online : * means anything
+  type    = "A" # alias
+
+  # these are all CloudFront DNS name and zone information
+  alias {
+    name                   = aws_cloudfront_distribution.expense_cdn.domain_name
+    zone_id                = aws_cloudfront_distribution.expense_cdn.hosted_zone_id
+    evaluate_target_health = false
+  }
+  
+  allow_overwrite = true
+}

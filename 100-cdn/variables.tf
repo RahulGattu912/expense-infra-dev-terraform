@@ -17,3 +17,7 @@ variable "environment" {
 variable "domain_name" {
     default = "learndevops.online"
 }
+
+variable "zone_id" { # hosted zone id
+    default = "Z021448929NXMW4P65QE"
+}
