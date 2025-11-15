@@ -4,11 +4,17 @@ This repository contains Terraform configurations for setting up the infrastruct
 
 ## Project Structure
 
-```
+```text
 ├── 00-vpc/          # VPC and networking configuration
 ├── 10-sg/           # Security Groups
 ├── 20-bastion/      # Bastion host configuration
-└── 50-app-alb/      # Application Load Balancer setup
+├── 30-vpn/          # VPN setup
+├── 40-rds/          # RDS database instance
+├── 50-app-alb/      # Application Load Balancer for backend
+├── 60-backend/      # Backend application infrastructure
+├── 70-acm/          # ACM for SSL certificates
+├── 80-web-alb/      # Application Load Balancer for frontend
+└── 90-frontend/     # Frontend application infrastructure
 ```
 
 ## Infrastructure Components
@@ -34,12 +40,36 @@ This repository contains Terraform configurations for setting up the infrastruct
 - Uses custom RHEL 9 DevOps AMI
 - Configured with necessary security group rules
 
+### VPN (30-vpn)
+
+- Sets up a VPN server for secure access to the private network.
+
+### RDS (40-rds)
+
+- Provisions a MySQL RDS instance in the database subnets.
+
 ### Application Load Balancer (50-app-alb)
 
-- Internal ALB deployment in private subnets
+- Internal ALB deployment in private subnets for the backend services.
 - HTTP listener on port 80
 - Route53 record creation for `*.app-dev.learndevops.online`
 - Default response configuration
+
+### Backend (60-backend)
+
+- Deploys the backend application.
+
+### ACM (70-acm)
+
+- Manages SSL certificates for the load balancers.
+
+### Web ALB (80-web-alb)
+
+- Deploys a public-facing Application Load Balancer for the frontend.
+
+### Frontend (90-frontend)
+
+- Deploys the frontend application.
 
 ## Prerequisites
 
@@ -67,7 +97,13 @@ environment = "dev"
 1. VPC (`00-vpc`)
 2. Security Groups (`10-sg`)
 3. Bastion Host (`20-bastion`)
-4. Application Load Balancer (`50-app-alb`)
+4. VPN (`30-vpn`)
+5. RDS (`40-rds`)
+6. Application Load Balancer (`50-app-alb`)
+7. Backend (`60-backend`)
+8. ACM (`70-acm`)
+9. Web ALB (`80-web-alb`)
+10. Frontend (`90-frontend`)
 
 ## Usage
 

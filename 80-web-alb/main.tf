@@ -39,7 +39,7 @@ resource "aws_lb_listener" "https" {
 
 resource "aws_route53_record" "web_alb" {
   zone_id = var.zone_id
-  name    = "*.${var.domain_name}"  # {any-text-or-string}.app-dev.learndevops.online : * means anything
+  name    = "${var.project_name}-${var.environment}.${var.domain_name}"  # {any-text-or-string}.app-dev.learndevops.online : * means anything
   type    = "A" # alias
 
   # these are all ALB DNS name and zone information
