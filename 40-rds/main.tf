@@ -6,7 +6,8 @@ module "db" {
   engine            = "mysql"
   engine_version    = "8.0.40"
   instance_class    = "db.t4g.micro"
-  allocated_storage = 5
+  allocated_storage = 5 
+  
 
   db_name  = "transactions" # AWS will create this schema automatically
   username = "root"
