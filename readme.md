@@ -126,7 +126,7 @@ terraform apply
 
 - Domain: `learndevops.online`
 - ALB subdomain pattern: `*.app-dev.learndevops.online`
-- Route53 hosted zone ID: `Z021448929NXMW4P65QE`
+- Route53 hosted zone ID: `<YOUR-HOSTED-ZONE-ID`
 
 ## Security Considerations
 
